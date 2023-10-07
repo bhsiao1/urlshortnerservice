@@ -12,6 +12,7 @@
     </div>
 
     <script>
+        // function to get the long_url from the input and turn it into a short_url.
         function shortenUrl() {
             var longUrl = document.getElementById("longurl").value;
             fetch('/shorten', {

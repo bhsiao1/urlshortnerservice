@@ -20,6 +20,7 @@ def create_shortened_url(long_url):
 
     return short_code
 
+# helper method to get long_url from database that matches the short_url after changing to short_url to redirect.
 def get_long_url(short_code):
     db = sqlite3.connect(app.config['DATABASE'])
     cursor = db.cursor()
@@ -31,7 +32,8 @@ def get_long_url(short_code):
         return result[0]
     else:
         return None
-    
+
+# helper method to get all the urls from the database
 def get_all_urls():
     db = sqlite3.connect(app.config['DATABASE'])
     cursor = db.cursor()
@@ -43,11 +45,12 @@ def get_all_urls():
         json_urls.append({'long_url': row[1], 'short_url': f'http://{request.host}/{row[2]}'})
     return json_urls
 
+# route for local host link to start up the url conversion.
 @app.route('/')
 def index():
-    # Render the index.html template located in the templates folder
     return render_template('index.html')
 
+# route to shortern the url given a long_url in request body.
 @app.route('/shorten', methods=['POST'])
 def shorten_url():
     data = request.get_json()
@@ -56,6 +59,7 @@ def shorten_url():
 
     return jsonify({'short_url': f'http://{request.host}/{short_code}'})
 
+# route to redirect short_url to a long_url.
 @app.route('/<short_code>')
 def redirect_to_original(short_code):
     long_url = get_long_url(short_code)
@@ -65,6 +69,7 @@ def redirect_to_original(short_code):
     else:
         return jsonify({'error': 'Short URL not found'}), 404
     
+# route to turn the list of urls into a json format.
 @app.route('/list', methods=['GET'])
 def list_all_urls():
     urls = get_all_urls()
